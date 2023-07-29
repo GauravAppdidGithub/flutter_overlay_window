@@ -54,7 +54,6 @@ public class OverlayService extends Service implements View.OnTouchListener {
     public static boolean isRunning = false;
     private WindowManager windowManager = null;
     private FlutterView flutterView;
-    flutterView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
     private MethodChannel flutterChannel = new MethodChannel(
             FlutterEngineCache.getInstance().get(OverlayConstants.CACHED_TAG).getDartExecutor(),
