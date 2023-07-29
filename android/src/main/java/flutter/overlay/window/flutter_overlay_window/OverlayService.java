@@ -263,7 +263,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
             });
 
             ValueAnimator animator = new ValueAnimator();
-            animator.setDuration(1000); // Set the duration of the animation in milliseconds
+            animator.setDuration(10000); // Set the duration of the animation in milliseconds
             animator.playTogether(widthAnimator, heightAnimator);
             animator.start();
 
