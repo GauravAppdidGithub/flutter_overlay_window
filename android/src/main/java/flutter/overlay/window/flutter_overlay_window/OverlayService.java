@@ -237,7 +237,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
 //    }
     private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
         if (windowManager != null) {
-            WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+            final WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
 
             // Calculate the current width and height of the view
             int currentWidth = flutterView.getWidth();
@@ -248,33 +248,27 @@ public class OverlayService extends Service implements View.OnTouchListener {
             int newHeight = (height != -1999 || height != -1) ? currentHeight : dpToPx(height);
 
             // Create ValueAnimator for smooth resizing
-            ValueAnimator widthAnimator = ValueAnimator.ofInt(currentWidth, newWidth);
-            widthAnimator.addUpdateListener(animation -> {
-                int animatedValue = (int) animation.getAnimatedValue();
-                params.width = animatedValue;
+            ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+            animator.setDuration(300); // Set the duration of the animation in milliseconds
+
+            animator.addUpdateListener(animation -> {
+                float progress = (float) animation.getAnimatedValue();
+                params.width = (int) (currentWidth + (newWidth - currentWidth) * progress);
+                params.height = (int) (currentHeight + (newHeight - currentHeight) * progress);
                 windowManager.updateViewLayout(flutterView, params);
             });
-
-            ValueAnimator heightAnimator = ValueAnimator.ofInt(currentHeight, newHeight);
-            heightAnimator.addUpdateListener(animation -> {
-                int animatedValue = (int) animation.getAnimatedValue();
-                params.height = animatedValue;
-                windowManager.updateViewLayout(flutterView, params);
-            });
-
-            ValueAnimator animator = new ValueAnimator();
-            animator.setDuration(10000); // Set the duration of the animation in milliseconds
-            animator.playTogether(widthAnimator, heightAnimator);
-            animator.start();
 
             // Set the new enableDrag value
             WindowSetup.enableDrag = enableDrag;
+
+            animator.start();
 
             result.success(true);
         } else {
             result.success(false);
         }
     }
+
 
 
     @Override
