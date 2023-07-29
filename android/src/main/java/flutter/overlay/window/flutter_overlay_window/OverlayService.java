@@ -236,51 +236,30 @@ public class OverlayService extends Service implements View.OnTouchListener {
 //            result.success(false);
 //        }
 //    }
-    private void resizeOverlay(int targetWidth, int targetHeight, boolean enableDrag, final MethodChannel.Result result) {
+    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
         if (windowManager != null) {
             final WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
 
             final int currentWidth = params.width;
             final int currentHeight = params.height;
 
-            // Create a ValueAnimator to animate the width and height changes smoothly
+            // Create ValueAnimator for smooth resizing
             ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-            animator.setDuration(300); // Set the duration of the animation (in milliseconds)
-            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.setDuration(300); // Set the duration of the animation in milliseconds
 
-            // Set up the animator update listener
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    // Get the animated fraction (progress) of the animation
-                    float fraction = animation.getAnimatedFraction();
-
-                    // Calculate the intermediate width and height based on the animated fraction
-                    int newWidth = (int) (currentWidth + (targetWidth - currentWidth) * fraction);
-                    int newHeight = (int) (currentHeight + (targetHeight - currentHeight) * fraction);
-
-                    // Update the LayoutParams with the new width and height
-                    params.width = newWidth;
-                    params.height = newHeight;
-
-                    // Set the enableDrag flag to the provided value
-                    WindowSetup.enableDrag = enableDrag;
-
-                    // Update the layout of the flutterView with the new LayoutParams
-                    windowManager.updateViewLayout(flutterView, params);
-                }
+            animator.addUpdateListener(animation -> {
+                float progress = (float) animation.getAnimatedValue();
+                params.width = (int) (currentWidth + (width - currentWidth) * progress);
+                params.height = (int) (currentHeight + (height - currentHeight) * progress);
+                windowManager.updateViewLayout(flutterView, params);
             });
 
-            // Start the animation
+            // Set the new enableDrag value
+            WindowSetup.enableDrag = enableDrag;
+
             animator.start();
 
-            // Notify the caller that the operation was successful after the animation completes
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    result.success(true);
-                }
-            });
+            result.success(true);
         } else {
             result.success(false);
         }
