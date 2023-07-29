@@ -22,6 +22,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.animation.ValueAnimator;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -221,19 +222,60 @@ public class OverlayService extends Service implements View.OnTouchListener {
         }
     }
 
+//    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
+//        if (windowManager != null) {
+//            WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+//            params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
+////            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
+//            params.height = (height != -1999 || height != -1) ? -1 : dpToPx(height);
+//            WindowSetup.enableDrag = enableDrag;
+//            windowManager.updateViewLayout(flutterView, params);
+//            result.success(true);
+//        } else {
+//            result.success(false);
+//        }
+//    }
     private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
         if (windowManager != null) {
             WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
-            params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
-//            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
-            params.height = (height != -1999 || height != -1) ? -1 : dpToPx(height);
+
+            // Calculate the current width and height of the view
+            int currentWidth = flutterView.getWidth();
+            int currentHeight = flutterView.getHeight();
+
+            // Calculate the new width and height in pixels
+            int newWidth = (width == -1999 || width == -1) ? currentWidth : dpToPx(width);
+            int newHeight = (height != -1999 || height != -1) ? currentHeight : dpToPx(height);
+
+            // Create ValueAnimator for smooth resizing
+            ValueAnimator widthAnimator = ValueAnimator.ofInt(currentWidth, newWidth);
+            widthAnimator.addUpdateListener(animation -> {
+                int animatedValue = (int) animation.getAnimatedValue();
+                params.width = animatedValue;
+                windowManager.updateViewLayout(flutterView, params);
+            });
+
+            ValueAnimator heightAnimator = ValueAnimator.ofInt(currentHeight, newHeight);
+            heightAnimator.addUpdateListener(animation -> {
+                int animatedValue = (int) animation.getAnimatedValue();
+                params.height = animatedValue;
+                windowManager.updateViewLayout(flutterView, params);
+            });
+
+            ValueAnimator animator = new ValueAnimator();
+            animator.setDuration(300); // Set the duration of the animation in milliseconds
+            animator.playTogether(widthAnimator, heightAnimator);
+            animator.start();
+
+            // Set the new enableDrag value
             WindowSetup.enableDrag = enableDrag;
-            windowManager.updateViewLayout(flutterView, params);
+
             result.success(true);
         } else {
             result.success(false);
         }
     }
+
 
     @Override
     public void onCreate() {
