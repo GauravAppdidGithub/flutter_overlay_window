@@ -244,8 +244,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
             int currentHeight = flutterView.getHeight();
 
             // Calculate the new width and height in pixels
-            int newWidth = (width == -1999 || width == -1) ? currentWidth : dpToPx(width);
-            int newHeight = (height != -1999 || height != -1) ? currentHeight : dpToPx(height);
+            int newWidth = (width == -1999 || width == -1) ? -1 : dpToPx(width);
+            int newHeight = (height != -1999 || height != -1) ? -1 : dpToPx(height);
 
             // Create ValueAnimator for smooth resizing
             ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
