@@ -249,8 +249,10 @@ public class OverlayService extends Service implements View.OnTouchListener {
 
             animator.addUpdateListener(animation -> {
                 float progress = (float) animation.getAnimatedValue();
-                params.width = (int) (currentWidth + (width - currentWidth) * progress);
-                params.height = (int) (currentHeight + (height - currentHeight) * progress);
+//                params.width = (int) (currentWidth + (width - currentWidth) * progress);
+//                params.height = (int) (currentHeight + (height - currentHeight) * progress);
+                params.width = (int) (((width == -1999 || width == -1) ? -1 : dpToPx(width)) * progress);
+                params.height = (int) (((height == -1999 || height == -1) ? -1 : dpToPx(height)) * progress);
                 windowManager.updateViewLayout(flutterView, params);
             });
 
