@@ -223,49 +223,49 @@ public class OverlayService extends Service implements View.OnTouchListener {
         }
     }
 
-//    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
-//        if (windowManager != null) {
-//            WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
-//            params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
-////            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
-//            params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
-//            WindowSetup.enableDrag = enableDrag;
-//            windowManager.updateViewLayout(flutterView, params);
-//            result.success(true);
-//        } else {
-//            result.success(false);
-//        }
-//    }
     private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
         if (windowManager != null) {
-            final WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
-
-            final int currentWidth = params.width;
-            final int currentHeight = params.height;
-
-            // Create ValueAnimator for smooth resizing
-            ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-            animator.setDuration(500); // Set the duration of the animation in milliseconds
-
-            animator.addUpdateListener(animation -> {
-                float progress = (float) animation.getAnimatedValue();
-//                params.width = (int) (currentWidth + (width - currentWidth) * progress);
-//                params.height = (int) (currentHeight + (height - currentHeight) * progress);
-                params.width = (int) (((width == -1999 || width == -1) ? -1 : dpToPx(width)) * progress);
-                params.height = (int) (((height == -1999 || height == -1) ? -1 : dpToPx(height)) * progress);
-                windowManager.updateViewLayout(flutterView, params);
-            });
-
-            // Set the new enableDrag value
+            WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+            params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
+//            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
+            params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
             WindowSetup.enableDrag = enableDrag;
-
-            animator.start();
-
+            windowManager.updateViewLayout(flutterView, params);
             result.success(true);
         } else {
             result.success(false);
         }
     }
+//    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
+//        if (windowManager != null) {
+//            final WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+//
+//            final int currentWidth = params.width;
+//            final int currentHeight = params.height;
+//
+//            // Create ValueAnimator for smooth resizing
+//            ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+//            animator.setDuration(500); // Set the duration of the animation in milliseconds
+//
+//            animator.addUpdateListener(animation -> {
+//                float progress = (float) animation.getAnimatedValue();
+////                params.width = (int) (currentWidth + (width - currentWidth) * progress);
+////                params.height = (int) (currentHeight + (height - currentHeight) * progress);
+//                params.width = (int) (((width == -1999 || width == -1) ? -1 : dpToPx(width)) * progress);
+//                params.height = (int) (((height == -1999 || height == -1) ? -1 : dpToPx(height)) * progress);
+//                windowManager.updateViewLayout(flutterView, params);
+//            });
+//
+//            // Set the new enableDrag value
+//            WindowSetup.enableDrag = enableDrag;
+//
+//            animator.start();
+//
+//            result.success(true);
+//        } else {
+//            result.success(false);
+//        }
+//    }
 
 
 
