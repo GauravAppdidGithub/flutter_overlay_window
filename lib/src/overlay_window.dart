@@ -8,12 +8,9 @@ class FlutterOverlayWindow {
   FlutterOverlayWindow._();
 
   static final StreamController _controller = StreamController();
-  static const MethodChannel _channel =
-      MethodChannel("x-slayer/overlay_channel");
-  static const MethodChannel _overlayChannel =
-      MethodChannel("x-slayer/overlay");
-  static const BasicMessageChannel _overlayMessageChannel =
-      BasicMessageChannel("x-slayer/overlay_messenger", JSONMessageCodec());
+  static const MethodChannel _channel = MethodChannel("x-slayer/overlay_channel");
+  static const MethodChannel _overlayChannel = MethodChannel("x-slayer/overlay");
+  static const BasicMessageChannel _overlayMessageChannel = BasicMessageChannel("x-slayer/overlay_messenger", JSONMessageCodec());
 
   /// Open overLay content
   ///
@@ -97,13 +94,12 @@ class FlutterOverlayWindow {
 
   /// Update the overlay flag while the overlay in action
   static Future<bool?> updateFlag(OverlayFlag flag) async {
-    final bool? _res = await _overlayChannel
-        .invokeMethod<bool?>('updateFlag', {'flag': flag.name});
+    final bool? _res = await _overlayChannel.invokeMethod<bool?>('updateFlag', {'flag': flag.name});
     return _res;
   }
 
   /// Update the overlay size in the screen
-  static Future<bool?> resizeOverlay(int width, int height, bool enableDrag) async {
+  static Future<bool?> resizeOverlay(int width, int height, bool enableDrag, bool dummy) async {
     final bool? _res = await _overlayChannel.invokeMethod<bool?>(
       'resizeOverlay',
       {
