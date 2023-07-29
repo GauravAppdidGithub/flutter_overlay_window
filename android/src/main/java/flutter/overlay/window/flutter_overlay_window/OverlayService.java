@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.animation.ValueAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -235,35 +236,51 @@ public class OverlayService extends Service implements View.OnTouchListener {
 //            result.success(false);
 //        }
 //    }
-    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
+    private void resizeOverlay(int targetWidth, int targetHeight, boolean enableDrag, final MethodChannel.Result result) {
         if (windowManager != null) {
             final WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
 
-            // Calculate the current width and height of the view
-            int currentWidth = flutterView.getWidth();
-            int currentHeight = flutterView.getHeight();
+            final int currentWidth = params.width;
+            final int currentHeight = params.height;
 
-            // Calculate the new width and height in pixels
-            int newWidth = (width == -1999 || width == -1) ? -1 : dpToPx(width);
-            int newHeight = (height == -1999 || height == -1) ? -1 : dpToPx(height);
-
-            // Create ValueAnimator for smooth resizing
+            // Create a ValueAnimator to animate the width and height changes smoothly
             ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-            animator.setDuration(100); // Set the duration of the animation in milliseconds
+            animator.setDuration(300); // Set the duration of the animation (in milliseconds)
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
 
-            animator.addUpdateListener(animation -> {
-                float progress = (float) animation.getAnimatedValue();
-                params.width = (int) (currentWidth + (newWidth - currentWidth) * progress);
-                params.height = (int) (currentHeight + (newHeight - currentHeight) * progress);
-                windowManager.updateViewLayout(flutterView, params);
+            // Set up the animator update listener
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    // Get the animated fraction (progress) of the animation
+                    float fraction = animation.getAnimatedFraction();
+
+                    // Calculate the intermediate width and height based on the animated fraction
+                    int newWidth = (int) (currentWidth + (targetWidth - currentWidth) * fraction);
+                    int newHeight = (int) (currentHeight + (targetHeight - currentHeight) * fraction);
+
+                    // Update the LayoutParams with the new width and height
+                    params.width = newWidth;
+                    params.height = newHeight;
+
+                    // Set the enableDrag flag to the provided value
+                    WindowSetup.enableDrag = enableDrag;
+
+                    // Update the layout of the flutterView with the new LayoutParams
+                    windowManager.updateViewLayout(flutterView, params);
+                }
             });
 
-            // Set the new enableDrag value
-            WindowSetup.enableDrag = enableDrag;
-
+            // Start the animation
             animator.start();
 
-            result.success(true);
+            // Notify the caller that the operation was successful after the animation completes
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    result.success(true);
+                }
+            });
         } else {
             result.success(false);
         }
