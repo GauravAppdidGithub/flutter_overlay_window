@@ -249,7 +249,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
 
             // Create ValueAnimator for smooth resizing
             ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-            animator.setDuration(300); // Set the duration of the animation in milliseconds
+            animator.setDuration(1000); // Set the duration of the animation in milliseconds
 
             animator.addUpdateListener(animation -> {
                 float progress = (float) animation.getAnimatedValue();
