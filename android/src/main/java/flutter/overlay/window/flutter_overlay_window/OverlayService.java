@@ -140,6 +140,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 int width = call.argument("width");
                 int height = call.argument("height");
                 boolean enableDrag = call.argument("enableDrag");
+                boolean showAd = call.argument("showAd");
+
                 resizeOverlay(width, height, enableDrag, result);
             }
         });
@@ -235,7 +237,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
         }
     }
 
-    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
+    private void resizeOverlay(int width, int height, boolean enableDrag, boolean showAd, MethodChannel.Result result) {
         if (windowManager != null) {
             WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
             params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
@@ -243,16 +245,48 @@ public class OverlayService extends Service implements View.OnTouchListener {
             params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
             WindowSetup.enableDrag = enableDrag;
 
-//            windowManager.updateViewLayout(flutterView, params);
-            // Load and display a banner ad
-            AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.BANNER);
-            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-            AdRequest adRequest = new AdRequest.Builder().build();
-            adView.loadAd(adRequest);
+//
 
-            // Add the adView to the overlay
-            windowManager.addView(adView, params);
+//            if (showAd) {
+//
+//            // Load and display a banner ad
+//            AdView adView = new AdView(this);
+//            adView.setAdSize(AdSize.BANNER);
+//            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+//            AdRequest adRequest = new AdRequest.Builder().build();
+//            adView.loadAd(adRequest);
+//
+//            // Add the adView to the overlay
+//            windowManager.addView(adView, params);
+//            } else {
+//                windowManager.updateViewLayout(flutterView, params);
+//            }
+
+            if (showAd) {
+                // Create a FrameLayout container to hold both adView and flutterView
+                FrameLayout overlayContainer = new FrameLayout(this);
+                overlayContainer.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                // Load and display a banner ad
+                AdView adView = new AdView(this);
+                adView.setAdSize(AdSize.BANNER);
+                adView.setAdUnitId("your_banner_ad_unit_id_here");
+                AdRequest adRequest = new AdRequest.Builder().build();
+                adView.loadAd(adRequest);
+
+                // Add the adView to the overlayContainer
+                overlayContainer.addView(adView);
+
+                // Add the flutterView to the overlayContainer
+                overlayContainer.addView(flutterView);
+
+                // Add the overlayContainer to the windowManager
+                windowManager.addView(overlayContainer, params);
+            } else {
+                windowManager.updateViewLayout(flutterView, params);
+            }
+
 
             result.success(true);
         } else {
