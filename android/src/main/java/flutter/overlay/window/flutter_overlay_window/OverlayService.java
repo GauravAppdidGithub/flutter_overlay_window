@@ -25,6 +25,8 @@ import android.view.WindowManager;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.AdRequest;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -239,7 +241,18 @@ public class OverlayService extends Service implements View.OnTouchListener {
 //            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
             params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
             WindowSetup.enableDrag = enableDrag;
-            windowManager.updateViewLayout(flutterView, params);
+
+//            windowManager.updateViewLayout(flutterView, params);
+            // Load and display a banner ad
+            AdView adView = new AdView(this);
+            adView.setAdSize(AdSize.BANNER);
+            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.loadAd(adRequest);
+
+            // Add the adView to the overlay
+            windowManager.addView(adView, params);
+
             result.success(true);
         } else {
             result.success(false);
