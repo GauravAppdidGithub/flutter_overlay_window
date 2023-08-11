@@ -19,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -247,47 +248,23 @@ public class OverlayService extends Service implements View.OnTouchListener {
             params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
             WindowSetup.enableDrag = enableDrag;
 
-//
+            if (showAd){// Load and display a banner ad
+                AdView adView = new AdView(this);
+                adView.setAdSize(AdSize.BANNER);
+                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                AdRequest adRequest = new AdRequest.Builder().build();
+                adView.loadAd(adRequest);
 
-//            if (showAd) {
-            // Load and display a banner ad
-            AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.BANNER);
-            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-            AdRequest adRequest = new AdRequest.Builder().build();
-            adView.loadAd(adRequest);
+                // Add the adView to your flutterView
+                FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                );
+                adParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM; // Adjust the ad position
+                flutterView.addView(adView, adParams);
+            }
 
-            // Add the adView to the overlay
-//            windowManager.addView(adView, params);
-//            } else {
-                windowManager.updateViewLayout(flutterView, params);
-//            }
-
-//            if (showAd) {
-//                // Create a FrameLayout container to hold both adView and flutterView
-//                FrameLayout overlayContainer = new FrameLayout(this);
-//                overlayContainer.setLayoutParams(new ViewGroup.LayoutParams(
-//                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//
-//                // Load and display a banner ad
-//                AdView adView = new AdView(this);
-//                adView.setAdSize(AdSize.BANNER);
-//                adView.setAdUnitId("your_banner_ad_unit_id_here");
-//                AdRequest adRequest = new AdRequest.Builder().build();
-//                adView.loadAd(adRequest);
-//
-//                // Add the adView to the overlayContainer
-//                overlayContainer.addView(adView);
-//
-//                // Add the flutterView to the overlayContainer
-//                overlayContainer.addView(flutterView);
-//
-//                // Add the overlayContainer to the windowManager
-//                windowManager.addView(overlayContainer, params);
-//            } else {
-//                windowManager.updateViewLayout(flutterView, params);
-//            }
-
+            windowManager.updateViewLayout(flutterView, params);
 
             result.success(true);
         } else {
