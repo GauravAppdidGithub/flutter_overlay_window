@@ -240,6 +240,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
         }
     }
 
+
+    private AdView adView;
     private void resizeOverlay(int width, int height, boolean enableDrag, boolean showAd, MethodChannel.Result result) {
         if (windowManager != null) {
             WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
@@ -248,9 +250,9 @@ public class OverlayService extends Service implements View.OnTouchListener {
             params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
             WindowSetup.enableDrag = enableDrag;
 
-//            if (showAd){
+            if (showAd){
                 // Load and display a banner ad
-                AdView adView = new AdView(this);
+                adView = new AdView(this);
                 adView.setAdSize(AdSize.BANNER);
                 adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                 AdRequest adRequest = new AdRequest.Builder().build();
@@ -264,7 +266,10 @@ public class OverlayService extends Service implements View.OnTouchListener {
 //                adParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM; // Adjust the ad position
                 adParams.gravity = Gravity.CENTER_HORIZONTAL & Gravity.CENTER;
                 flutterView.addView(adView, adParams);
-//            }
+            } else {
+                flutterView.removeView(adView);
+                adView = null;
+            }
 
             windowManager.updateViewLayout(flutterView, params);
 
