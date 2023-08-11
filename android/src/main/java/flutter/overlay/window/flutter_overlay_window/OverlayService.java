@@ -263,9 +263,14 @@ public class OverlayService extends Service implements View.OnTouchListener {
                         FrameLayout.LayoutParams.WRAP_CONTENT,
                         FrameLayout.LayoutParams.WRAP_CONTENT
                 );
-//                adParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM; // Adjust the ad position
-//                adParams.gravity = Gravity.CENTER_HORIZONTAL & Gravity.CENTER;
-                adParams.gravity = Gravity.BOTTOM;
+
+                int customGravity = Gravity.BOTTOM | Gravity.CENTER_VERTICAL;
+                int gWeight = 4;
+                int finalGravity = customGravity | weight;
+
+                adParams.gravity = finalGravity;
+//                adParams.gravity = Gravity.BOTTOM & Gravity.CENTER_HORIZONTAL;
+
                 flutterView.addView(adView, adParams);
             } else {
                 flutterView.removeView(adView);
