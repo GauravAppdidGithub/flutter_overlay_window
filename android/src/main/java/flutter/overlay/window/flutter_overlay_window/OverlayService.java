@@ -258,10 +258,10 @@ public class OverlayService extends Service implements View.OnTouchListener {
             adView.loadAd(adRequest);
 
             // Add the adView to the overlay
-            windowManager.updateViewLayout(adView, params);
-            } else {
+//            windowManager.addView(adView, params);
+//            } else {
                 windowManager.updateViewLayout(flutterView, params);
-            }
+//            }
 
 //            if (showAd) {
 //                // Create a FrameLayout container to hold both adView and flutterView
