@@ -99,14 +99,13 @@ class FlutterOverlayWindow {
   }
 
   /// Update the overlay size in the screen
-  static Future<bool?> resizeOverlay(int width, int height, bool enableDrag, bool showAd) async {
+  static Future<bool?> resizeOverlay(int width, int height, bool enableDrag) async {
     final bool? _res = await _overlayChannel.invokeMethod<bool?>(
       'resizeOverlay',
       {
         'width': width,
         'height': height,
         'enableDrag': enableDrag,
-        'showAd': showAd,
       },
     );
     return _res;
