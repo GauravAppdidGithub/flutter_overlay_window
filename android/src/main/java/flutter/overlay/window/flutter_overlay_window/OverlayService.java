@@ -249,7 +249,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
 
 //
 
-            if (showAd) {
+//            if (showAd) {
             // Load and display a banner ad
             AdView adView = new AdView(this);
             adView.setAdSize(AdSize.BANNER);
