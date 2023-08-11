@@ -142,7 +142,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 boolean enableDrag = call.argument("enableDrag");
                 boolean showAd = call.argument("showAd");
 
-                resizeOverlay(width, height, enableDrag, result);
+                resizeOverlay(width, height, enableDrag, showAd, result);
             }
         });
         overlayMessageChannel.setMessageHandler((message, reply) -> {
