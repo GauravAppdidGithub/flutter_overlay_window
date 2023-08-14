@@ -15,6 +15,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -138,6 +139,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 int height = call.argument("height");
                 boolean enableDrag = call.argument("enableDrag");
                 boolean showAd = call.argument("showAd");
+                String alignment = call.argument("alignment");
+                String positionGravity = call.argument("positionGravity");
 
                 resizeOverlay(width, height, enableDrag, showAd, result);
             }
@@ -238,11 +241,21 @@ public class OverlayService extends Service implements View.OnTouchListener {
     private AdView adView;
     private void resizeOverlay(int width, int height, boolean enableDrag, boolean showAd, MethodChannel.Result result) {
         if (windowManager != null) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
             WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+            WindowSetup.enableDrag = enableDrag;
+
+            params.gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
+            params.x = 0;
+            params.y = 0;
+
+
             params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
 //            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
             params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
-            WindowSetup.enableDrag = enableDrag;
 
             if (showAd) {
                 // Add the adView to your flutterView
@@ -251,8 +264,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
                         FrameLayout.LayoutParams.WRAP_CONTENT
                 );
 
-                adParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-                adParams.bottomMargin = dpToPx(50);
+                adParams.gravity = Gravity.CENTER;
+                adParams.topMargin = dpToPx(200);
 
                 flutterView.addView(adView, adParams);
             } else {
@@ -263,42 +276,13 @@ public class OverlayService extends Service implements View.OnTouchListener {
             windowManager.updateViewLayout(flutterView, params);
 
             result.success(true);
+
+                }
+            });
         } else {
             result.success(false);
         }
     }
-//    private void resizeOverlay(int width, int height, boolean enableDrag, MethodChannel.Result result) {
-//        if (windowManager != null) {
-//            final WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
-//
-//            final int currentWidth = params.width;
-//            final int currentHeight = params.height;
-//
-//            // Create ValueAnimator for smooth resizing
-//            ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-//            animator.setDuration(500); // Set the duration of the animation in milliseconds
-//
-//            animator.addUpdateListener(animation -> {
-//                float progress = (float) animation.getAnimatedValue();
-////                params.width = (int) (currentWidth + (width - currentWidth) * progress);
-////                params.height = (int) (currentHeight + (height - currentHeight) * progress);
-//                params.width = (int) (((width == -1999 || width == -1) ? -1 : dpToPx(width)) * progress);
-//                params.height = (int) (((height == -1999 || height == -1) ? -1 : dpToPx(height)) * progress);
-//                windowManager.updateViewLayout(flutterView, params);
-//            });
-//
-//            // Set the new enableDrag value
-//            WindowSetup.enableDrag = enableDrag;
-//
-//            animator.start();
-//
-//            result.success(true);
-//        } else {
-//            result.success(false);
-//        }
-//    }
-
-
 
     @Override
     public void onCreate() {
@@ -314,6 +298,15 @@ public class OverlayService extends Service implements View.OnTouchListener {
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+
+        // Get the screen dimensions
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        if (windowManager != null) {
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
+        }
 
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, FlutterOverlayWindowPlugin.class);
@@ -362,6 +355,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
         return mResources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
+    private int screenWidth;
+    private int screenHeight;
     @Override
     public boolean onTouch(View view, MotionEvent event) {
         if (windowManager != null && WindowSetup.enableDrag) {
@@ -382,6 +377,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     lastY = event.getRawY();
                     int xx = params.x + (int) dx;
                     int yy = params.y + (int) dy;
+
                     params.x = xx;
                     params.y = yy;
                     windowManager.updateViewLayout(flutterView, params);
