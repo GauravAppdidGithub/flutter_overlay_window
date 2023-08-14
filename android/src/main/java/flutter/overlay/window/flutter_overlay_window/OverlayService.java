@@ -265,7 +265,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 );
 
                 int customGravity = Gravity.BOTTOM | Gravity.CENTER_VERTICAL;
-                int gWeight = 7;
+                int gWeight = 10;
                 int finalGravity = customGravity | gWeight;
 
                 adParams.gravity = finalGravity;
