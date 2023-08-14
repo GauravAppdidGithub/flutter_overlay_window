@@ -265,7 +265,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 );
 
                 adParams.gravity = Gravity.CENTER;
-                adParams.topMargin = dpToPx(200);
+                adParams.bottomMargin = dpToPx(200);
 
                 flutterView.addView(adView, adParams);
             } else {
@@ -294,7 +294,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
 
         // Load and display a banner ad
         adView = new AdView(this);
-        adView.setAdSize(AdSize.BANNER);
+        adView.setAdSize(AdSize.LARGE_BANNER);
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
