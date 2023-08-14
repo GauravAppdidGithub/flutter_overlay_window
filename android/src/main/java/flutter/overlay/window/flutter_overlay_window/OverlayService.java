@@ -129,12 +129,6 @@ public class OverlayService extends Service implements View.OnTouchListener {
         flutterView.setFocusableInTouchMode(true);
         flutterView.setBackgroundColor(Color.TRANSPARENT);
 
-//        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-//            @Override
-//            public void onInitializationComplete(InitializationStatus initializationStatus) {
-//            }
-//        });
-
         flutterChannel.setMethodCallHandler((call, result) -> {
             if (call.method.equals("updateFlag")) {
                 String flag = call.argument("flag").toString();
@@ -251,13 +245,6 @@ public class OverlayService extends Service implements View.OnTouchListener {
             WindowSetup.enableDrag = enableDrag;
 
             if (showAd) {
-                // Load and display a banner ad
-                adView = new AdView(this);
-                adView.setAdSize(AdSize.BANNER);
-                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                AdRequest adRequest = new AdRequest.Builder().build();
-                adView.loadAd(adRequest);
-
                 // Add the adView to your flutterView
                 FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -270,7 +257,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 flutterView.addView(adView, adParams);
             } else {
                 flutterView.removeView(adView);
-                adView = null;
+//                adView = null;
             }
 
             windowManager.updateViewLayout(flutterView, params);
@@ -320,6 +307,14 @@ public class OverlayService extends Service implements View.OnTouchListener {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
+
+        // Load and display a banner ad
+        adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, FlutterOverlayWindowPlugin.class);
         int pendingFlags;
