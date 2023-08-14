@@ -258,12 +258,13 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 AdRequest adRequest = new AdRequest.Builder().build();
                 adView.loadAd(adRequest);
 
-                int customGravity = Gravity.BOTTOM | Gravity.CENTER_VERTICAL;
+//                int customGravity = Gravity.BOTTOM | Gravity.CENTER_VERTICAL;
 //                int gWeight = 10;
 //                int finalGravity = customGravity | gWeight;
-                float verticalOffsetFraction = 0.5f;
-                int yOffset = Math.round((customGravity & Gravity.VERTICAL_GRAVITY_MASK) * verticalOffsetFraction);
-                int finalGravity = customGravity | yOffset;
+                //_______________
+//                float verticalOffsetFraction = 0.5f;
+//                int yOffset = Math.round((customGravity & Gravity.VERTICAL_GRAVITY_MASK) * verticalOffsetFraction);
+//                int finalGravity = customGravity | yOffset;
 
                 // Add the adView to your flutterView
                 FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(
@@ -272,8 +273,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 );
 
 
-                adParams.gravity = finalGravity;
-//                adParams.gravity = Gravity.BOTTOM & Gravity.CENTER_HORIZONTAL;
+//                adParams.gravity = finalGravity;
+                adParams.gravity = Gravity.BOTTOM;
 
                 flutterView.addView(adView, adParams);
             } else {
