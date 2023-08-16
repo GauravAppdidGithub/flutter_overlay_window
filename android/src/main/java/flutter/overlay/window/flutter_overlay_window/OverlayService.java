@@ -111,6 +111,15 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 stopSelf();
             }
             isRunning = false;
+
+//            // Load the ad asynchronously after the overlay is set up
+//            new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                }
+//            });
+
             return START_STICKY;
         }
         if (windowManager != null) {
@@ -239,10 +248,10 @@ public class OverlayService extends Service implements View.OnTouchListener {
 
 
     private AdView adView;
+    Handler mainHandler = new Handler(Looper.getMainLooper());
     private void resizeOverlay(int width, int height, boolean enableDrag, boolean showAd, MethodChannel.Result result) {
         if (windowManager != null) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
+            mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
             WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
@@ -293,20 +302,11 @@ public class OverlayService extends Service implements View.OnTouchListener {
         });
 
         // Load and display a banner ad
-        adView = new AdView(this);
+        adView = new AdView(OverlayService.this);
         adView.setAdSize(AdSize.LARGE_BANNER);
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
-
-        // Get the screen dimensions
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        if (windowManager != null) {
-        screenWidth = displayMetrics.widthPixels;
-        screenHeight = displayMetrics.heightPixels;
-        }
 
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, FlutterOverlayWindowPlugin.class);
@@ -355,8 +355,6 @@ public class OverlayService extends Service implements View.OnTouchListener {
         return mResources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
-    private int screenWidth;
-    private int screenHeight;
     @Override
     public boolean onTouch(View view, MotionEvent event) {
         if (windowManager != null && WindowSetup.enableDrag) {
@@ -378,10 +376,14 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     int xx = params.x + (int) dx;
                     int yy = params.y + (int) dy;
 
-                    params.x = xx;
-                    params.y = yy;
-                    windowManager.updateViewLayout(flutterView, params);
-                    dragging = true;
+                        if (Math.abs(params.x - xx) >= 2 || Math.abs(params.y - yy) >= 2) {
+                            params.x = xx;
+                            params.y = yy;
+                            windowManager.updateViewLayout(flutterView, params);
+                        }
+
+                        dragging = true;
+
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
