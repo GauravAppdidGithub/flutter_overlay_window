@@ -301,8 +301,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
         // Load and display a banner ad
         adView = new AdView(OverlayService.this);
         adView.setAdSize(AdSize.LARGE_BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
-        // adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
+        // adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
+        adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
