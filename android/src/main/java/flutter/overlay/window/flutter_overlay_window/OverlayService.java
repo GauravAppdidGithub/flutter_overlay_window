@@ -112,13 +112,13 @@ public class OverlayService extends Service implements View.OnTouchListener {
             }
             isRunning = false;
 
-//            // Load the ad asynchronously after the overlay is set up
-//            new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//                }
-//            });
+            // // Load the ad asynchronously after the overlay is set up
+            // new Handler(Looper.getMainLooper()).post(new Runnable() {
+            // @Override
+            // public void run() {
+            //
+            // }
+            // });
 
             return START_STICKY;
         }
@@ -246,45 +246,42 @@ public class OverlayService extends Service implements View.OnTouchListener {
         }
     }
 
-
     private AdView adView;
     Handler mainHandler = new Handler(Looper.getMainLooper());
+
     private void resizeOverlay(int width, int height, boolean enableDrag, boolean showAd, MethodChannel.Result result) {
         if (windowManager != null) {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-            WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
-//            params.gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
-            params.x = 0;
-            params.y = 0;
+                    WindowManager.LayoutParams params = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+                    // params.gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
+                    params.x = 0;
+                    params.y = 0;
 
+                    params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
+                    // params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
+                    params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
 
-            params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
-//            params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
-            params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
+                    if (showAd) {
+                        // Add the adView to your flutterView
+                        FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT);
 
-            if (showAd) {
-                // Add the adView to your flutterView
-                FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.WRAP_CONTENT,
-                        FrameLayout.LayoutParams.WRAP_CONTENT
-                );
+                        adParams.gravity = Gravity.CENTER;
+                        adParams.bottomMargin = dpToPx(200);
 
-                adParams.gravity = Gravity.CENTER;
-                adParams.bottomMargin = dpToPx(200);
-
-                flutterView.addView(adView, adParams);
-            } else {
-                flutterView.removeView(adView);
-//                adView = null;
-            }
-
+                        flutterView.addView(adView, adParams);
+                    } else {
+                        flutterView.removeView(adView);
+                        // adView = null;
+                    }
 
                     windowManager.updateViewLayout(flutterView, params);
                     WindowSetup.enableDrag = enableDrag;
 
-            result.success(true);
+                    result.success(true);
 
                 }
             });
@@ -304,8 +301,8 @@ public class OverlayService extends Service implements View.OnTouchListener {
         // Load and display a banner ad
         adView = new AdView(OverlayService.this);
         adView.setAdSize(AdSize.LARGE_BANNER);
-//        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); //--test ID
-        adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
+        // adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
@@ -377,13 +374,13 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     int xx = params.x + (int) dx;
                     int yy = params.y + (int) dy;
 
-                        if (Math.abs(params.x - xx) >= 2 || Math.abs(params.y - yy) >= 2) {
-                            params.x = xx;
-                            params.y = yy;
-                            windowManager.updateViewLayout(flutterView, params);
-                        }
+                    if (Math.abs(params.x - xx) >= 2 || Math.abs(params.y - yy) >= 2) {
+                        params.x = xx;
+                        params.y = yy;
+                        windowManager.updateViewLayout(flutterView, params);
+                    }
 
-                        dragging = true;
+                    dragging = true;
 
                     break;
                 case MotionEvent.ACTION_UP:
