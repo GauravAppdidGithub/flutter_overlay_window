@@ -264,13 +264,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
 
                     if (showAd) {
-                        // Load and display a banner ad
-                        adView = new AdView(OverlayService.this);
-                        adView.setAdSize(AdSize.LARGE_BANNER);
-                        // adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
-                        adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
-                        AdRequest adRequest = new AdRequest.Builder().build();
-                        adView.loadAd(adRequest);
+
 
                         // Add the adView to your flutterView
                         FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(
@@ -283,7 +277,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                         flutterView.addView(adView, adParams);
                     } else {
                         flutterView.removeView(adView);
-                         adView = null;
+//                         adView = null;
                     }
 
                     windowManager.updateViewLayout(flutterView, params);
@@ -305,6 +299,14 @@ public class OverlayService extends Service implements View.OnTouchListener {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
+
+        // Load and display a banner ad
+        adView = new AdView(OverlayService.this);
+        adView.setAdSize(AdSize.LARGE_BANNER);
+        // adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
+        adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, FlutterOverlayWindowPlugin.class);
