@@ -264,7 +264,6 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
 
                     if (showAd) {
-
                         // Load and display a banner ad
                         adView = new AdView(OverlayService.this);
                         adView.setAdSize(AdSize.LARGE_BANNER);
