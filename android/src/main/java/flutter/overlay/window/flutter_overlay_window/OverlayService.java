@@ -288,8 +288,11 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     }
 
                     windowManager.updateViewLayout(flutterView, params);
-//                    WindowSetup.enableDrag = enableDrag;
-                    WindowSetup.setEnableDrag(enableDrag);
+
+                    boolean globalEnableDrag = WindowSetup.isEnableDrag();
+                    if (globalEnableDrag != enableDrag) {
+                        WindowSetup.setEnableDrag(enableDrag);
+                    }
 
                     result.success(true);
 
