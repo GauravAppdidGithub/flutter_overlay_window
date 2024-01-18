@@ -19,7 +19,21 @@ public abstract class WindowSetup {
     static String overlayContent = "Tap to edit settings or disable";
     static String positionGravity = "none";
     static int notificationVisibility = NotificationCompat.VISIBILITY_PRIVATE;
+
+    static final Object lock = new Object();
     static boolean enableDrag = false;
+    // Getter method for enableDrag
+    public static boolean isEnableDrag() {
+        synchronized (lock) {
+            return enableDrag;
+        }
+    }
+    // Setter method for enableDrag
+    public static void setEnableDrag(boolean value) {
+        synchronized (lock) {
+            enableDrag = value;
+        }
+    }
 
 
     static void setNotificationVisibility(String name) {
