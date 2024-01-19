@@ -1,5 +1,7 @@
 package flutter.overlay.window.flutter_overlay_window;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -31,6 +33,8 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
+
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -259,6 +263,25 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     params.x = 0;
                     params.y = 0;
 
+//                    int currentWidth = params.width;
+//                    int currentHeight = params.height;
+//
+//                    // Create a ValueAnimator for width and height
+//                    ValueAnimator sizeAnimator = ValueAnimator.ofInt(currentWidth, ((width == -1999 || width == -1) ? -1 : dpToPx(width)), currentHeight, ((height == -1999 || height == -1) ? -1 : dpToPx(height)));
+//                    sizeAnimator.setDuration(200); // Adjust the duration as needed
+//                    sizeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                        @Override
+//                        public void onAnimationUpdate(ValueAnimator animation) {
+//                            int animatedValue = (int) animation.getAnimatedValue();
+//                            params.width = animatedValue;
+//                            params.height = animatedValue;
+//                            windowManager.updateViewLayout(flutterView, params);
+//                        }
+//                    });
+//
+//                    // Start the size animator
+//                    sizeAnimator.start();
+//-------------------------------------------------------------------------------------------
                     params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
                     // params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
                     params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
@@ -267,7 +290,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                         // Load and display a banner ad
                         adView = new AdView(OverlayService.this);
                         adView.setAdSize(AdSize.LARGE_BANNER);
-                        // adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
+//                        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111"); // --test ID
                         adView.setAdUnitId("ca-app-pub-5792296207093661/7795962486");
                         AdRequest adRequest = new AdRequest.Builder().build();
                         adView.loadAd(adRequest);
@@ -283,8 +306,10 @@ public class OverlayService extends Service implements View.OnTouchListener {
 
                         flutterView.addView(adView, adParams);
                     } else {
-                        flutterView.removeView(adView);
-                        adView = null;
+                        if (adView != null) {
+                            flutterView.removeView(adView);
+                            adView = null;
+                        }
                     }
 
                     windowManager.updateViewLayout(flutterView, params);
