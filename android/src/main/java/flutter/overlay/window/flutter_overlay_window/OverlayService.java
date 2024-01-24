@@ -263,9 +263,37 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     params.x = 0;
                     params.y = 0;
 
-//                    int currentWidth = params.width;
-//                    int currentHeight = params.height;
-//
+                    int currentWidth = params.width;
+                    int currentHeight = params.height;
+
+                    // Create a ValueAnimator for width
+                    ValueAnimator widthAnimator = ValueAnimator.ofInt(currentWidth, (width == -1999 || width == -1) ? -1 : dpToPx(width));
+                    widthAnimator.setDuration(200); // Increase the duration for a slower animation
+                    widthAnimator.setInterpolator(new DecelerateInterpolator()); // Use decelerate interpolator
+                    widthAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            params.width = (int) animation.getAnimatedValue();
+                            windowManager.updateViewLayout(flutterView, params);
+                        }
+                    });
+
+                    // Create a ValueAnimator for height
+                    ValueAnimator heightAnimator = ValueAnimator.ofInt(currentHeight, (height == -1999 || height == -1) ? -1 : dpToPx(height));
+                    heightAnimator.setDuration(200); // Increase the duration for a slower animation
+                    heightAnimator.setInterpolator(new DecelerateInterpolator()); // Use decelerate interpolator
+                    heightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            params.height = (int) animation.getAnimatedValue();
+                            windowManager.updateViewLayout(flutterView, params);
+                        }
+                    });
+
+                    // Start width and height animators together
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    animatorSet.playTogether(widthAnimator, heightAnimator);
+                    animatorSet.start();
 //                    // Create a ValueAnimator for width and height
 //                    ValueAnimator sizeAnimator = ValueAnimator.ofInt(currentWidth, ((width == -1999 || width == -1) ? -1 : dpToPx(width)), currentHeight, ((height == -1999 || height == -1) ? -1 : dpToPx(height)));
 //                    sizeAnimator.setDuration(200); // Adjust the duration as needed
@@ -278,13 +306,13 @@ public class OverlayService extends Service implements View.OnTouchListener {
 //                            windowManager.updateViewLayout(flutterView, params);
 //                        }
 //                    });
-//
-//                    // Start the size animator
+
+                    // Start the size animator
 //                    sizeAnimator.start();
 //-------------------------------------------------------------------------------------------
-                    params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
-                    // params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
-                    params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
+//                    params.width = (width == -1999 || width == -1) ? -1 : dpToPx(width);
+//                    // params.height = (height != 1999 || height != -1) ? dpToPx(height) : height;
+//                    params.height = (height == -1999 || height == -1) ? -1 : dpToPx(height);
 
                     if (showAd) {
                         // Load and display a banner ad
@@ -312,7 +340,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
                         }
                     }
 
-                    windowManager.updateViewLayout(flutterView, params);
+//                    windowManager.updateViewLayout(flutterView, params);
 
                     boolean globalEnableDrag = WindowSetup.isEnableDrag();
                     if (globalEnableDrag != enableDrag) {
